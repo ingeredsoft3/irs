@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IngeRedSoft - Catálogo de Productos y Servicios</title>
-    <!-- Tailwind CSS para un diseño moderno y responsivo -->
+    <title>IngeRedSoft - Catálogo</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Estilos para el visor de imagen en grande (Zoom) */
+        /* Estilos originales preservados + visor de zoom integrado */
         .image-modal {
             display: none;
             position: fixed;
@@ -37,20 +37,17 @@
             cursor: pointer;
         }
         .product-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: opacity 0.2s;
         }
         .product-img:hover {
-            transform: scale(1.02);
+            opacity: 0.9;
         }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Encabezado -->
+    <!-- Encabezado con tu estilo azul original -->
     <header class="bg-blue-600 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold tracking-wide">IngeRedSoft | Catálogo</h1>
@@ -60,19 +57,19 @@
 
     <!-- Contenido Principal -->
     <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <h2 class="text-xl font-semibold text-gray-700">Nuestros Productos y Servicios</h2>
             <!-- Buscador -->
-            <input type="text" id="searchInput" placeholder="Buscar producto..." class="px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-64" oninput="filtrarProductos()">
+            <input type="text" id="searchInput" placeholder="Buscar producto..." class="px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-full md:w-64" oninput="filtrarProductos()">
         </div>
 
         <!-- Grid de Productos -->
         <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- Los productos se cargarán dinámicamente aquí -->
+            <!-- Los productos se cargan dinámicamente -->
         </div>
     </main>
 
-    <!-- Pie de página con Acceso Administrativo -->
+    <!-- Pie de página -->
     <footer class="bg-white border-t mt-12 py-6 text-center text-sm text-gray-500">
         <p>© 2026 IngeRedSoft. Todos los derechos reservados.</p>
         <p class="mt-2">
@@ -116,13 +113,11 @@
             <hr class="my-6">
 
             <h4 class="font-bold text-gray-700 mb-2">Productos Registrados</h4>
-            <div id="adminProductList" class="space-y-2 max-h-40 overflow-y-auto">
-                <!-- Lista de administración para editar/eliminar -->
-            </div>
+            <div id="adminProductList" class="space-y-2 max-h-40 overflow-y-auto"></div>
         </div>
     </div>
 
-    <!-- Visor de Zoom en Grande -->
+    <!-- Visor de Zoom en Grande (Modal para Imágenes) -->
     <div id="imageModal" class="image-modal" onclick="closeImageModal()">
         <span class="image-modal-close">&times;</span>
         <img id="modalImage" src="" alt="Imagen Ampliada">
@@ -130,7 +125,6 @@
 
     <!-- Lógica en JavaScript -->
     <script>
-        // Productos por defecto si el localStorage está vacío
         const productosIniciales = [
             {
                 nombre: "VENTILADOR",
@@ -155,7 +149,6 @@
             }
         ];
 
-        // Cargar productos desde localStorage o usar los iniciales
         function obtenerProductos() {
             let guardados = localStorage.getItem('ingeredsoft_productos');
             if (!guardados) {
@@ -169,7 +162,6 @@
             localStorage.setItem('ingeredsoft_productos', JSON.stringify(productos));
         }
 
-        // Renderizar productos en la página principal
         function renderizarCatalogo(lista = null) {
             const grid = document.getElementById('productGrid');
             const productos = lista || obtenerProductos();
@@ -184,7 +176,7 @@
                 grid.innerHTML += `
                     <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col justify-between border border-gray-100 hover:shadow-lg transition-shadow">
                         <div>
-                            <img src="${p.imagen}" alt="${p.nombre}" class="product-img" onclick="openImageModal('${p.imagen}')" title="Haz clic para ver en grande">
+                            <img src="${p.imagen}" alt="${p.nombre}" class="product-img w-full h-48 object-cover" onclick="openImageModal('${p.imagen}')" title="Haz clic para ver en grande">
                             <div class="p-4">
                                 <span class="text-xs bg-gray-200 text-gray-700 px-2.5 py-1 rounded-full font-semibold">${p.categoria}</span>
                                 <h3 class="font-bold text-lg text-gray-800 mt-2">${p.nombre}</h3>
@@ -197,7 +189,6 @@
             });
         }
 
-        // Buscador interactivo
         function filtrarProductos() {
             const texto = document.getElementById('searchInput').value.toLowerCase();
             const productos = obtenerProductos();
@@ -209,7 +200,6 @@
             renderizarCatalogo(filtrados);
         }
 
-        // Seguridad del Panel Admin
         function verificarAdmin() {
             const password = prompt("Ingrese la contraseña de administrador:");
             if (password === "IngeRed2026") {
@@ -233,7 +223,6 @@
             renderizarCatalogo();
         }
 
-        // Guardar o Actualizar Producto desde el Panel
         function guardarProducto(e) {
             e.preventDefault();
             const index = document.getElementById('editIndex').value;
@@ -247,9 +236,9 @@
 
             let productos = obtenerProductos();
             if (index === "") {
-                productos.push(nuevoProd); // Agregar nuevo
+                productos.push(nuevoProd);
             } else {
-                productos[index] = nuevoProd; // Editar existente
+                productos[index] = nuevoProd;
             }
 
             guardarEnStorage(productos);
@@ -260,7 +249,6 @@
             alert("¡Operación exitosa!");
         }
 
-        // Listar en el panel admin para editar o borrar
         function renderizarListaAdmin() {
             const listaDiv = document.getElementById('adminProductList');
             const productos = obtenerProductos();
@@ -271,8 +259,8 @@
                     <div class="flex justify-between items-center bg-gray-50 p-2 rounded border text-sm">
                         <span class="truncate w-40 font-medium">${p.nombre}</span>
                         <div class="space-x-2">
-                            <button onclick="cargarParaEditar(${index})" class="text-blue-600 hover:underline">Editar</button>
-                            <button onclick="eliminarProducto(${index})" class="text-red-600 hover:underline">Eliminar</button>
+                            <button type="button" onclick="cargarParaEditar(${index})" class="text-blue-600 hover:underline">Editar</button>
+                            <button type="button" onclick="eliminarProducto(${index})" class="text-red-600 hover:underline">Eliminar</button>
                         </div>
                     </div>
                 `;
@@ -300,7 +288,7 @@
             }
         }
 
-        // Funciones del Visor de Zoom de Imagen
+        // Funciones del visor de zoom
         function openImageModal(imgSrc) {
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
@@ -312,7 +300,6 @@
             document.getElementById('imageModal').style.display = 'none';
         }
 
-        // Inicializar al cargar la página
         window.onload = function() {
             renderizarCatalogo();
         };
